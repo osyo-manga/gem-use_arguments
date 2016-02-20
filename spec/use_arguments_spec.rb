@@ -26,4 +26,11 @@ describe UseArguments do
 			expect( (f.call do |a, b| a + b end) ).to eq 3
 		end
 	end
+
+	describe "Object#use_args" do
+		it "Object#use_args#any method" do
+			expect( [1, 2, 3].use_args.map{ _1 + _1 } ).to eq [2, 4, 6]
+			expect( [1, 2, 3].use_args.map{ |a| a + a } ).to eq [2, 4, 6]
+		end
+	end
 end

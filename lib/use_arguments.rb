@@ -63,7 +63,7 @@ end
 
 
 UseArguments.__send__ :define_singleton_method, :const_missing do |name|
-	self.__send__ :eval, <<EOS
+	eval <<EOS
 		module ::UseArguments::#{name}
 			refine #{name} do
 				include ::UseArguments::Usable

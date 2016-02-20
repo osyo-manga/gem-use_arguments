@@ -21,7 +21,7 @@ describe UseArguments do
 			f = proc { _self }.use_args
 			expect( f.call == f ).to eq true
 		end
-		it "Use _block" do
+		it "Use _yield" do
 			f = proc { _yield 1, 2 }.use_args
 			expect( (f.call do |a, b| a + b end) ).to eq 3
 		end

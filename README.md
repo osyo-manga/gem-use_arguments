@@ -56,6 +56,6 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/osyo-m
 
 ## Special Thanks
 
-* supermomonga
+* [supermomonga](http://qiita.com/supermomonga/items/b0576847b1b88e3cd400)
 
 

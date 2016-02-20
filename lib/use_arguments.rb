@@ -5,6 +5,7 @@ require "use_arguments/version"
 module UseArguments
 	module ToUseArgs
 		def use_args
+			return self unless self.parameters.size == 0
 			self_ = self
 			::Object.new.instance_eval do
 				x = proc { |*args, &block|

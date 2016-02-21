@@ -62,31 +62,35 @@ module UseArguments
 	def self.const_missing name
 		self.usable name
 	end
+
+	def self.usable name
+		__send__ name if respond_to? name
+
+		m = ::Module.new do
+			refine ::ObjectSpace.each_object(::Class).find { |klass| klass.name == name.to_s } do
+				include ::UseArguments::Usable
+				extend  ::UseArguments::Usable
+			end
+		end
+
+		define_singleton_method name do
+			m
+		end
+		m
+
+	# 	::UseArguments.const_set(name, Module.new do
+	# 		refine ObjectSpace.each_object(Class).find { |klass| klass.name == name.to_s } do
+	# 			include ::UseArguments::Usable
+	# 			extend  ::UseArguments::Usable
+	# 		end
+	# 	end)
+	# 	::UseArguments.const_get name
+
+	end
 end
 
 
-UseArguments.__send__ :define_singleton_method, :usable do |name|
-	__send__ name if respond_to? name
-
-	m = ::Module.new do
-		refine ::ObjectSpace.each_object(::Class).find { |klass| klass.name == name.to_s } do
-			include ::UseArguments::Usable
-			extend  ::UseArguments::Usable
-		end
-	end
-	define_singleton_method name do
-		m
-	end
-	m
-
-# 	::UseArguments.const_set(name, Module.new do
-# 		refine ObjectSpace.each_object(Class).find { |klass| klass.name == name.to_s } do
-# 			include ::UseArguments::Usable
-# 			extend  ::UseArguments::Usable
-# 		end
-# 	end)
-# 	::UseArguments.const_get name
-
+# UseArguments.__send__ :define_singleton_method, :usable do |name|
 # 	eval <<EOS
 # 		module ::UseArguments::#{name}
 # 			refine #{name} do
@@ -96,5 +100,5 @@ UseArguments.__send__ :define_singleton_method, :usable do |name|
 # 		end
 # EOS
 # 	::UseArguments.const_get name
-end
+# end
 

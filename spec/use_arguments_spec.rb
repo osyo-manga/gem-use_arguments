@@ -33,4 +33,35 @@ describe UseArguments do
 			expect( [1, 2, 3].use_args.map{ |a| a + a } ).to eq [2, 4, 6]
 		end
 	end
+
+	describe "Usable" do
+		it "failed" do
+			expect{ [1, 2, 3].map { _1 + _1 } }.to raise_error NameError
+		end
+	end
 end
+
+
+using UseArguments::Array
+
+module X
+	class Y
+		def func
+			yield 1, 2
+		end
+	end
+end
+
+using UseArguments.usable "X::Y"
+
+describe UseArguments do
+	describe "Usable" do
+		it "success" do
+			expect( [1, 2, 3].map { _1 + _1 } ).to eq [2, 4, 6]
+			expect( X::Y.new.func { _1 + _2 } ).to eq 3
+		end
+	end
+end
+
+
+

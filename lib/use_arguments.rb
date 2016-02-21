@@ -66,6 +66,8 @@ end
 
 
 UseArguments.__send__ :define_singleton_method, :usable do |name|
+	__send__ name if respond_to? name
+
 	m = ::Module.new do
 		refine ::ObjectSpace.each_object(::Class).find { |klass| klass.name == name.to_s } do
 			include ::UseArguments::Usable

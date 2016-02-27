@@ -49,15 +49,21 @@ module X
 		def func
 			yield 1, 2
 		end
+
+		def self.func
+			yield 1, 2
+		end
 	end
 end
 
-using UseArguments.usable "X::Y"
+using UseArguments.usable X::Y
+
 
 describe UseArguments do
 	describe "Usable" do
 		it "success" do
 			expect( [1, 2, 3].map { _1 + _1 } ).to eq [2, 4, 6]
+			expect( X::Y.func { _1 + _2 } ).to eq 3
 			expect( X::Y.new.func { _1 + _2 } ).to eq 3
 		end
 	end

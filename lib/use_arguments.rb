@@ -75,17 +75,3 @@ module UseArguments
 		end
 	end
 end
-
-
-# UseArguments.__send__ :define_singleton_method, :usable do |name|
-# 	eval <<EOS
-# 		module ::UseArguments::#{name}
-# 			refine #{name} do
-# 				include ::UseArguments::Usable
-# 				extend  ::UseArguments::Usable
-# 			end
-# 		end
-# EOS
-# 	::UseArguments.const_get name
-# end
-

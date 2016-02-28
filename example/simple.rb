@@ -49,6 +49,8 @@ p [1, 2, 3].use_args.map { _1 * _1 }
 
 # UseArguments::{Use args class name}
 using UseArguments::Array
+# or
+# using UseArguments.usable Array
 
 p [1, 2, 3].map { _1 + _1 }
 # => [2, 4, 6]

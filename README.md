@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/osyo-manga/gem-use_arguments.svg?branch=master)](https://travis-ci.org/osyo-manga/gem-use_arguments)
+
 # UseArguments
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/use_arguments`. To experiment with that code, run `bin/console` for an interactive prompt.
@@ -35,6 +37,8 @@ require "use_arguments"
 
 # UseArguments::{Use args class name}
 using UseArguments::Array
+# or
+# using UseArguments.usable Array
 
 p [1, 2, 3].map { _1 + _1 }
 # => [2, 4, 6]

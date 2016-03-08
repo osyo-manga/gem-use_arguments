@@ -41,9 +41,18 @@ using UseArguments::Array
 p [1, 2, 3].map { _1 + _1 }
 # => [2, 4, 6]
 
+# Splatted array argument.
+p [[1, 2], [3, 4]].use_args.map { _1 + _2 }
+# => [3, 7]
+
+
 using UseArguments::Hash
 p ({homu: 13, mami: 14, mado: 13}).select { _2 < 14 }
 # => {:homu=>13, :mado=>13}
+
+# Splatted array argument.
+p data.map { "#{_1}:#{_2}" }
+# => ["homu:13", "mami:14", "mado:13"]
 ```
 
 ## Development
@@ -59,6 +68,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/osyo-m
 ## Release note
 
 * 0.2.0
+ * Splatted array argument.
  * Support lambda.
  * Bug fix.
 

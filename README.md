@@ -56,6 +56,14 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/osyo-manga/use_arguments.
 
+## Release note
+
+* 0.2.0
+ * Bug fix.
+
+* 0.1.0
+ * Release!!
+
 ## Special Thanks
 
 * [supermomonga](http://qiita.com/supermomonga/items/b0576847b1b88e3cd400)

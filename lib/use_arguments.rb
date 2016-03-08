@@ -6,10 +6,10 @@ require "use_arguments/version"
 module UseArguments
 	module ToUseArgs
 		def use_args
-			return self unless self.parameters.size == 0
+			return self unless self.arity == 0
 			self_ = self
-			::Object.new.instance_eval do
-				x = proc { |*args, &block|
+			x = proc { |*args, &block|
+				::Object.new.instance_eval do
 					define_singleton_method(:_args) { args }
 					define_singleton_method(:_) { args[0] }
 					define_singleton_method(:_self) { x }
@@ -17,9 +17,24 @@ module UseArguments
 					args.size.times do |i|
 						define_singleton_method("_#{i + 1}") { args[i] }
 					end
+					define_singleton_method(:method_missing) do |name, *args, &block|
+						return nil if name.to_s =~ /^_\d+$/
+						super(name, *args, &block)
+					end
 					instance_exec *args, &self_
-				}
-			end
+				end
+			}
+		end
+
+		def use_args!
+			return self unless self.arity == 0
+			self_ = self
+			proc { |*args, &block|
+				args = args[0] if args.size == 1 && args[0].class == Array
+				ToUseArgs.instance_method(:use_args).bind(self_).().(
+					*args, &block
+				)
+			}
 		end
 	end
 
@@ -27,14 +42,36 @@ module UseArguments
 		include ToUseArgs
 	end
 
+end
+
+
+using UseArguments
+
+module UseArguments
 	module AsUseArgs
+		class Proxy < BasicObject
+			def initialize receiver, &callback
+				@receiver = receiver
+				@callback = callback
+			end
+
+			def method_missing name, *args, &block
+				return @callback.call(name, *args, &block) if block && block.arity == 0
+				@receiver.__send__(name, *args, &block)
+			end
+		end
+
 		def use_args
 			self_ = self
-			::Class.new(::BasicObject) do
-				define_singleton_method(:method_missing) do |name, *args, &block|
-					return self_.__send__(name, *args, &block) unless block && block.parameters.size == 0
-					self_.__send__(name, *args, &ToUseArgs.instance_method(:use_args).bind(block).())
-				end
+			Proxy.new self_ do |name, *args, &block|
+				self_.__send__ name, *args, &block.use_args
+			end
+		end
+
+		def use_args!
+			self_ = self
+			Proxy.new self_ do |name, *args, &block|
+				self_.__send__ name, *args, &block.use_args!
 			end
 		end
 	end
@@ -59,8 +96,6 @@ module UseArguments
 	end
 end
 
-
-using ::UseArguments
 
 module UseArguments
 	module Usable

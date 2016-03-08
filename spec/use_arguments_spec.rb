@@ -6,13 +6,16 @@ describe UseArguments do
 	it 'has a version number' do
 		expect(UseArguments::VERSION).not_to be nil
 	end
-	
+
 	describe "Proc#use_args" do
 		it "Use _1" do
 			expect(proc { _1 + _2 }.use_args.call 1, 2).to eq 3
 		end
 		it "Use _" do
 			expect(proc { _ + _ }.use_args.call 1).to eq 2
+		end
+		it "Use _N" do
+			expect(proc { [_1, _2] }.use_args.call 1).to eq [1, nil]
 		end
 		it "Use _args" do
 			expect(proc { _args }.use_args.call 1, 2, 3).to eq [1, 2, 3]
@@ -25,12 +28,34 @@ describe UseArguments do
 			f = proc { _yield 1, 2 }.use_args
 			expect( (f.call do |a, b| a + b end) ).to eq 3
 		end
+		it "Array argument" do
+			expect(proc { _1.push(_2) }.use_args.call([1, 2], 3)).to eq [1, 2, 3]
+			expr = proc { [_1, _2] }.use_args
+
+			expect(expr.call([1, 2])).to eq [[1, 2], nil]
+			expect(expr.call(1, 2)).to eq [1, 2]
+			expect(expr.call([1])).to eq [[1], nil]
+			expect(expr.call(1)).to eq [1, nil]
+		end
+	end
+	
+	describe "Proc#use_args!" do
+		it "Array argument" do
+			expect(proc { _1.push(_2) }.use_args!.call([1, 2], 3)).to eq [1, 2, 3]
+			expr = proc { [_1, _2] }.use_args!
+
+			expect(expr.call([1, 2])).to eq [1, 2]
+			expect(expr.call(1, 2)).to eq [1, 2]
+			expect(expr.call([1])).to eq [1, nil]
+			expect(expr.call(1)).to eq [1, nil]
+		end
 	end
 
 	describe "Object#use_args" do
 		it "Object#use_args#any method" do
 			expect( [1, 2, 3].use_args.map{ _1 + _1 } ).to eq [2, 4, 6]
 			expect( [1, 2, 3].use_args.map{ |a| a + a } ).to eq [2, 4, 6]
+			expect( [1, 2, 3].use_args.map.class ).to eq Enumerator
 		end
 	end
 
@@ -63,7 +88,9 @@ describe UseArguments do
 	describe "Usable" do
 		it "success" do
 			expect( [1, 2, 3].map { _1 + _1 } ).to eq [2, 4, 6]
+			expect( [1, 2, 3].map.class ).to eq Enumerator
 			expect( X::Y.func { _1 + _2 } ).to eq 3
+			expect( X::Y.new.func { _1 + _2 } ).to eq 3
 			expect( X::Y.new.func { _1 + _2 } ).to eq 3
 		end
 	end

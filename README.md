@@ -59,6 +59,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/osyo-m
 ## Release note
 
 * 0.2.0
+ * Support lambda.
  * Bug fix.
 
 * 0.1.0

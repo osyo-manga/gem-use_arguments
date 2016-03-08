@@ -32,30 +32,39 @@ describe UseArguments do
 			expect(proc { _1.push(_2) }.use_args.call([1, 2], 3)).to eq [1, 2, 3]
 			expr = proc { [_1, _2] }.use_args
 
-			expect(expr.call([1, 2])).to eq [[1, 2], nil]
-			expect(expr.call(1, 2)).to eq [1, 2]
-			expect(expr.call([1])).to eq [[1], nil]
-			expect(expr.call(1)).to eq [1, nil]
-		end
-	end
-	
-	describe "Proc#use_args!" do
-		it "Array argument" do
-			expect(proc { _1.push(_2) }.use_args!.call([1, 2], 3)).to eq [1, 2, 3]
-			expr = proc { [_1, _2] }.use_args!
-
 			expect(expr.call([1, 2])).to eq [1, 2]
 			expect(expr.call(1, 2)).to eq [1, 2]
 			expect(expr.call([1])).to eq [1, nil]
 			expect(expr.call(1)).to eq [1, nil]
 		end
 	end
+	
+	describe "Proc#use_args in lambda" do
+		it "Array argument" do
+			expect(lambda { _1.push(_2) }.use_args.call([1, 2], 3)).to eq [1, 2, 3]
+			expect(lambda { _1 }.use_args.call([1, 2])).to eq [1, 2]
+
+			expr = lambda { [_1, _2] }.use_args
+			expect{expr.call([1, 2])}.to raise_error NameError
+			expect(expr.call(1, 2)).to eq [1, 2]
+			expect{expr.call([1])}.to raise_error NameError
+			expect{expr.call(1)}.to raise_error NameError
+		end
+	end
 
 	describe "Object#use_args" do
 		it "Object#use_args#any method" do
 			expect( [1, 2, 3].use_args.map{ _1 + _1 } ).to eq [2, 4, 6]
+			expect( [1, 2, 3].use_args.map &proc { _1 + _1 } ).to eq [2, 4, 6]
 			expect( [1, 2, 3].use_args.map{ |a| a + a } ).to eq [2, 4, 6]
 			expect( [1, 2, 3].use_args.map.class ).to eq Enumerator
+			expect( [[1, 2], [3, 4]].use_args.map{ _1 + _2 } ).to eq [3, 7]
+			expect( [[1, 2], [3, 4]].use_args.map &proc{ _1 + _1 } ).to eq [2, 6]
+		end
+
+		it "use #lambda" do
+			expect( [[1, 2], [3, 4]].use_args.map &lambda{ _1 + _1 } ).to eq [[1, 2, 1, 2], [3, 4, 3, 4]]
+			expect{ [[1, 2], [3, 4]].use_args.map &lambda{ _1 + _2 } }.to raise_error NameError
 		end
 	end
 

@@ -5,8 +5,9 @@ using UseArguments
 
 =begin
 	Implicitly defined parameters in block.
-	_1, _2..._N : argument value.
-	_args       : argument array.
+	_1, _2..._N : Argument value.
+	_           : _1
+	_args       : Argument array.
 	_self       : self Proc object.
 	_yield      : block argument.
 =end
@@ -33,6 +34,13 @@ p f.call { |a, b| a - b }
 p f.call &plus
 # => 3
 
+# Array argument is splatted in proc.
+p proc { _1 + _1 }.use_args.call [1, 2]
+# => 2
+
+# Array argument is no splatted in lambda.
+p lambda { _1 + _1 }.use_args.call [1, 2]
+# => [1, 2, 1, 2]
 
 #--------------------------------------
 # Object#use_args
@@ -42,6 +50,11 @@ p f.call &plus
 p [1, 2, 3].use_args.map { _1 * _1 }
 # => [1, 4, 9]
 
+p [[1, 2], [3, 4]].use_args.map &proc{ _1 + _1 }
+# => [2, 6]
+
+p [[1, 2], [3, 4]].use_args.map &lambda{ _1 + _1 }
+# => [[1, 2, 1, 2], [3, 4, 3, 4]]
 
 #--------------------------------------
 # Class method use args.

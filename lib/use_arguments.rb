@@ -71,10 +71,7 @@ module UseArguments
 			end
 		end
 	end
-end
 
-
-module UseArguments
 	module Usable
 		def self.prepend_features mod
 			mod.__send__ :prepend, (Module.new do

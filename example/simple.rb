@@ -10,6 +10,7 @@ using UseArguments
 	_args       : Argument array.
 	_self       : self Proc object.
 	_yield      : block argument.
+	_receiver   : receiver object.
 =end
 
 #--------------------------------------
@@ -55,6 +56,9 @@ p [[1, 2], [3, 4]].use_args.map &proc{ _1 + _1 }
 
 p [[1, 2], [3, 4]].use_args.map &lambda{ _1 + _1 }
 # => [[1, 2, 1, 2], [3, 4, 3, 4]]
+
+p [1, 2, 3].use_args.map { _1 + _receiver.size }
+# => [4, 5, 6]
 
 #--------------------------------------
 # Class method use args.

@@ -31,6 +31,7 @@ require "use_arguments"
 	_args       : argument array.
 	_self       : self Proc object.
 	_yield      : block argument.
+	_receiver   : receiver object.
 =end
 
 # UseArguments::{Use args class name}
@@ -44,6 +45,9 @@ p [1, 2, 3].map { _1 + _1 }
 # Splatted array argument.
 p [[1, 2], [3, 4]].use_args.map { _1 + _2 }
 # => [3, 7]
+
+p [1, 2, 3].map { _1 + _receiver.size }
+# => [4, 5, 6]
 
 
 using UseArguments::Hash
@@ -69,6 +73,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/osyo-m
 
 * 0.2.0
  * Splatted array argument.
+ * Add `_receiver` parameter.
  * Support lambda.
  * Bug fix.
 

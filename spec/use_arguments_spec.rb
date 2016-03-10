@@ -28,6 +28,10 @@ describe UseArguments do
 			f = proc { _yield 1, 2 }.use_args
 			expect( (f.call do |a, b| a + b end) ).to eq 3
 		end
+		it "Use _receiver" do
+			f = proc { _receiver }
+			expect( (f.use_args.()) ).to eq f
+		end
 		it "Array argument" do
 			expect(proc { _1.push(_2) }.use_args.call([1, 2], 3)).to eq [1, 2, 3]
 			expr = proc { [_1, _2] }.use_args
@@ -36,6 +40,9 @@ describe UseArguments do
 			expect(expr.call(1, 2)).to eq [1, 2]
 			expect(expr.call([1])).to eq [1, nil]
 			expect(expr.call(1)).to eq [1, nil]
+		end
+		it "use block" do
+			expect(proc { |&block| block.() }.use_args.call { 42 }).to eq 42
 		end
 	end
 	
@@ -65,6 +72,9 @@ describe UseArguments do
 		it "use #lambda" do
 			expect( [[1, 2], [3, 4]].use_args.map &lambda{ _1 + _1 } ).to eq [[1, 2, 1, 2], [3, 4, 3, 4]]
 			expect{ [[1, 2], [3, 4]].use_args.map &lambda{ _1 + _2 } }.to raise_error NameError
+		end
+		it "use _receiver" do
+			expect( [1, 2].use_args.map { _receiver } ).to eq [[1, 2], [1, 2]]
 		end
 	end
 
@@ -101,6 +111,7 @@ describe UseArguments do
 			expect( X::Y.func { _1 + _2 } ).to eq 3
 			expect( X::Y.new.func { _1 + _2 } ).to eq 3
 			expect( X::Y.new.func { _1 + _2 } ).to eq 3
+			expect( [1, 2].map { _receiver } ).to eq [[1, 2], [1, 2]]
 		end
 	end
 end

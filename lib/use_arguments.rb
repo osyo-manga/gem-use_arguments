@@ -5,8 +5,9 @@ require "use_arguments/version"
 
 module UseArguments
 	module ToUseArgs
-		def use_args
-			return self unless self.arity == 0
+		def use_args receiver = self
+			return self unless self.parameters.empty?
+
 			self_ = self
 			x = proc do |*args, &block|
 				::Object.new.instance_eval do
@@ -15,6 +16,7 @@ module UseArguments
 					define_singleton_method(:_args) { args }
 					define_singleton_method(:_) { args[0] }
 					define_singleton_method(:_self) { x }
+					define_singleton_method(:_receiver) { receiver }
 					define_singleton_method(:_yield) { |*args, &_block| block.call *args, &_block }
 					args.size.times do |i|
 						define_singleton_method("_#{i + 1}") { args[i] }
@@ -46,8 +48,8 @@ module UseArguments
 			self_ = self
 			::Class.new(BasicObject) do
 				define_singleton_method(:method_missing) do |name, *args, &block|
-					return self_.__send__ name,*args, &block unless block && block.arity == 0
-					self_.__send__ name, *args, &block.use_args
+					return self_.__send__ name,*args, &block unless block && block.parameters.empty?
+					self_.__send__ name, *args, &block.use_args(self_)
 				end
 			end
 		end
@@ -77,7 +79,7 @@ module UseArguments
 			mod.__send__ :prepend, (Module.new do
 				for name in mod.instance_methods
 					define_method name do |*args, &block|
-						super *args, &(block ? block.use_args : nil)
+						super *args, &(block ? block.use_args(self) : nil)
 					end
 				end
 			end)
